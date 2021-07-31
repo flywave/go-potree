@@ -2,6 +2,7 @@ package potree
 
 type PotreeBin struct {
 	Path     string
+	Root     *Node
 	Nodes    map[string]*Node
 	Metadata Metadata
 }

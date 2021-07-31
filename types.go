@@ -1,7 +1,6 @@
 package potree
 
-import (
-	vec3d "github.com/flywave/go3d/float64/vec3"
-)
-
-type AABB vec3d.Box
+type AABB struct {
+	Min [3]float64 `json:"min,omitempty"`
+	Max [3]float64 `json:"max,omitempty"`
+}

@@ -1,9 +1,5 @@
 package potree
 
-import (
-	vec3d "github.com/flywave/go3d/float64/vec3"
-)
-
 type AttributeType uint32
 
 const (
@@ -78,63 +74,19 @@ func TypenameToType(name string) AttributeType {
 }
 
 type Attribute struct {
-	Name        string
-	Description string
-	Size        int
-	NumElements int
-	ElementSize int
-	Type        AttributeType
-	Min         vec3d.T
-	Max         vec3d.T
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	Size        int    `json:"size"`
+	NumElements int    `json:"numElements"`
+	ElementSize int    `json:"elementSize"`
+	Type        string `json:"type"`
 }
 
 func NewAttribute(name string, size, numElements, elementSize int, type_ AttributeType) *Attribute {
-	attr := &Attribute{Name: name, Size: size, NumElements: numElements, ElementSize: elementSize, Type: type_, Min: vec3d.MaxVal, Max: vec3d.MinVal}
+	attr := &Attribute{Name: name, Size: size, NumElements: numElements, ElementSize: elementSize, Type: AttributeTypeName[type_]}
 	return attr
 }
 
-type AttributeList struct {
-	Attrs     []Attribute
-	Bytes     int
-	PosScale  vec3d.T
-	PosOffset vec3d.T
-}
-
-func NewAttributeList(attributes []Attribute) *AttributeList {
-	ret := &AttributeList{}
-	ret.Attrs = attributes
-
-	for _, attribute := range attributes {
-		ret.Bytes += attribute.Size
-	}
-	return ret
-}
-
-func (l *AttributeList) Add(attribute *Attribute) {
-	l.Attrs = append(l.Attrs, *attribute)
-	l.Bytes += attribute.Size
-}
-
-func (l *AttributeList) GetOffset(name string) int {
-	offset := 0
-
-	for _, attribute := range l.Attrs {
-
-		if attribute.Name == name {
-			return offset
-		}
-
-		offset += attribute.Size
-	}
-
-	return -1
-}
-
-func (l *AttributeList) Get(name string) *Attribute {
-	for _, attribute := range l.Attrs {
-		if attribute.Name == name {
-			return &attribute
-		}
-	}
-	return nil
+func (a *Attribute) GetType() AttributeType {
+	return TypenameToType(a.Type)
 }
