@@ -23,6 +23,10 @@ func (n *Node) Level() int {
 	return len(n.Name) - 1
 }
 
+func (n *Node) IsLeaf() bool {
+	return n.Type == LEAF
+}
+
 func (n *Node) Traverse(callback func(*Node) bool) bool {
 	if !callback(n) {
 		return false
@@ -37,4 +41,18 @@ func (n *Node) Traverse(callback func(*Node) bool) bool {
 	}
 
 	return true
+}
+
+func ChildMaskOf(node *Node) uint8 {
+	mask := uint8(0)
+
+	for i := 0; i < 8; i++ {
+		child := node.Childs[i]
+
+		if child != nil {
+			mask = mask | (1 << i)
+		}
+	}
+
+	return mask
 }

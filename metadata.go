@@ -16,6 +16,8 @@ type Metadata struct {
 	BytesPerPoint   int         `json:"bytesPerPoint"`
 	Scale           [3]float64  `json:"scale"`
 	Offset          *[3]float64 `json:"offset,omitempty"`
+	Hierarchy       *Hierarchy  `json:"hierarchy,omitempty"`
+	Encoding        *string     `json:"encoding,omitempty"`
 }
 
 func NewMetadata(attributes []Attribute) *Metadata {
@@ -82,4 +84,11 @@ func (l *Metadata) Get(name string) *Attribute {
 		}
 	}
 	return nil
+}
+
+func (l *Metadata) IsBrotliEncoded() bool {
+	if l.Encoding != nil {
+		return *l.Encoding == "BROTLI"
+	}
+	return false
 }

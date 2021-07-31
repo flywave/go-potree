@@ -1,5 +1,10 @@
 package potree
 
+const (
+	MaxPointsPerChunk = 10000
+	ENCODING_BROTLI   = "BROTLI"
+)
+
 type PotreeBin struct {
 	Path     string
 	Root     *Node
