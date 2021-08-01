@@ -74,12 +74,14 @@ func TypenameToType(name string) AttributeType {
 }
 
 type Attribute struct {
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	Size        int    `json:"size"`
-	NumElements int    `json:"numElements"`
-	ElementSize int    `json:"elementSize"`
-	Type        string `json:"type"`
+	Name        string    `json:"name"`
+	Description string    `json:"description,omitempty"`
+	Size        int       `json:"size"`
+	NumElements int       `json:"numElements"`
+	ElementSize int       `json:"elementSize"`
+	Type        string    `json:"type"`
+	Min         []float64 `json:"min,omitempty"`
+	Max         []float64 `json:"max,omitempty"`
 }
 
 func NewAttribute(name string, size, numElements, elementSize int, type_ AttributeType) *Attribute {
@@ -92,20 +94,20 @@ func (a *Attribute) GetType() AttributeType {
 }
 
 var (
-	POSITION             Attribute = Attribute{Name: "position", Type: "int32", NumElements: 3, ElementSize: 4, Size: 12}
-	COLOR                Attribute = Attribute{Name: "rgb", Type: "uint16", NumElements: 3, ElementSize: 2, Size: 6}
-	INTENSITY            Attribute = Attribute{Name: "intensity", Type: "uint16", NumElements: 1, ElementSize: 2, Size: 2}
-	CLASSIFICATION       Attribute = Attribute{Name: "classification", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
-	RETURN_NUMBER        Attribute = Attribute{Name: "return number", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
-	NUMBER_OF_RETURNS    Attribute = Attribute{Name: "number of returns", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
-	POINT_SOURCE_ID      Attribute = Attribute{Name: "point source id", Type: "uint16", NumElements: 1, ElementSize: 2, Size: 2}
-	GPS_TIME             Attribute = Attribute{Name: "gps-time", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
-	NORMAL               Attribute = Attribute{Name: "normal", Type: "float", NumElements: 3, ElementSize: 4, Size: 12}
-	NORMAL_X             Attribute = Attribute{Name: "NormalX", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
-	NORMAL_Y             Attribute = Attribute{Name: "NormalY", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
-	NORMAL_Z             Attribute = Attribute{Name: "NormalZ", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
-	SCAN_ANGLE           Attribute = Attribute{Name: "scan angle", Type: "int16", NumElements: 1, ElementSize: 2, Size: 2}
-	SCAN_ANGLE_RANK      Attribute = Attribute{Name: "scan angle rank", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
-	USER_DATA            Attribute = Attribute{Name: "user data", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
-	CLASSIFICATION_FLAGS Attribute = Attribute{Name: "classification flags", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	POSITION             = Attribute{Name: "position", Type: "int32", NumElements: 3, ElementSize: 4, Size: 12}
+	COLOR                = Attribute{Name: "rgb", Type: "uint16", NumElements: 3, ElementSize: 2, Size: 6}
+	INTENSITY            = Attribute{Name: "intensity", Type: "uint16", NumElements: 1, ElementSize: 2, Size: 2}
+	CLASSIFICATION       = Attribute{Name: "classification", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	RETURN_NUMBER        = Attribute{Name: "return number", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	NUMBER_OF_RETURNS    = Attribute{Name: "number of returns", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	POINT_SOURCE_ID      = Attribute{Name: "point source id", Type: "uint16", NumElements: 1, ElementSize: 2, Size: 2}
+	GPS_TIME             = Attribute{Name: "gps-time", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
+	NORMAL               = Attribute{Name: "normal", Type: "float", NumElements: 3, ElementSize: 4, Size: 12}
+	NORMAL_X             = Attribute{Name: "NormalX", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
+	NORMAL_Y             = Attribute{Name: "NormalY", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
+	NORMAL_Z             = Attribute{Name: "NormalZ", Type: "double", NumElements: 1, ElementSize: 8, Size: 8}
+	SCAN_ANGLE           = Attribute{Name: "scan angle", Type: "int16", NumElements: 1, ElementSize: 2, Size: 2}
+	SCAN_ANGLE_RANK      = Attribute{Name: "scan angle rank", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	USER_DATA            = Attribute{Name: "user data", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	CLASSIFICATION_FLAGS = Attribute{Name: "classification flags", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
 )

@@ -6,7 +6,12 @@ import (
 	"io"
 )
 
+const (
+	POTREE_VERSION = "2.0"
+)
+
 type Metadata struct {
+	Version         string      `json:"version"`
 	Points          *int64      `json:"points,omitempty"`
 	PointsProcessed *int64      `json:"pointsProcessed,omitempty"`
 	NodesProcessed  *int64      `json:"nodesProcessed,omitempty"`
@@ -19,10 +24,11 @@ type Metadata struct {
 	Offset          *[3]float64 `json:"offset,omitempty"`
 	Hierarchy       *Hierarchy  `json:"hierarchy,omitempty"`
 	Encoding        *string     `json:"encoding,omitempty"`
+	Projection      *string     `json:"projection,omitempty"`
 }
 
 func NewMetadata(attributes []Attribute) *Metadata {
-	ret := &Metadata{}
+	ret := &Metadata{Version: POTREE_VERSION}
 	ret.Attrs = attributes
 
 	for _, attribute := range attributes {

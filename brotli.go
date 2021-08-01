@@ -13,13 +13,13 @@ const (
 	BestCompression    = brotli.BestCompression
 )
 
-type brotliCodec struct{}
+type Brotli struct{}
 
-func (brotliCodec) NewReader(r io.Reader) io.ReadCloser {
+func (Brotli) NewReader(r io.Reader) io.ReadCloser {
 	return ioutil.NopCloser(brotli.NewReader(r))
 }
 
-func (b brotliCodec) EncodeLevel(dst, src []byte, level int) []byte {
+func (b Brotli) EncodeLevel(dst, src []byte, level int) []byte {
 	maxlen := int(b.CompressBound(int64(len(src))))
 	if dst == nil || cap(dst) < maxlen {
 		dst = make([]byte, 0, maxlen)
@@ -36,11 +36,11 @@ func (b brotliCodec) EncodeLevel(dst, src []byte, level int) []byte {
 	return buf.Bytes()
 }
 
-func (b brotliCodec) Encode(dst, src []byte) []byte {
+func (b Brotli) Encode(dst, src []byte) []byte {
 	return b.EncodeLevel(dst, src, DefaultCompression)
 }
 
-func (brotliCodec) Decode(dst, src []byte) []byte {
+func (Brotli) Decode(dst, src []byte) []byte {
 	rdr := brotli.NewReader(bytes.NewReader(src))
 	if dst != nil {
 		var (
@@ -66,7 +66,7 @@ func (brotliCodec) Decode(dst, src []byte) []byte {
 	return dst
 }
 
-func (brotliCodec) CompressBound(len int64) int64 {
+func (Brotli) CompressBound(len int64) int64 {
 	nlarge := len >> 14
 	overhead := 2 + (4 * nlarge) + 3 + 1
 	result := len + overhead
@@ -79,10 +79,10 @@ func (brotliCodec) CompressBound(len int64) int64 {
 	return len
 }
 
-func (brotliCodec) NewWriter(w io.Writer) io.WriteCloser {
+func (Brotli) NewWriter(w io.Writer) io.WriteCloser {
 	return brotli.NewWriter(w)
 }
 
-func (brotliCodec) NewWriterLevel(w io.Writer, level int) (io.WriteCloser, error) {
+func (Brotli) NewWriterLevel(w io.Writer, level int) (io.WriteCloser, error) {
 	return brotli.NewWriterLevel(w, level), nil
 }
