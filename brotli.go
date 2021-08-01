@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 
 	"github.com/andybalholm/brotli"
-	_ "github.com/andybalholm/brotli"
 )
 
 const (

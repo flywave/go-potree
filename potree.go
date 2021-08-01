@@ -3,6 +3,10 @@ package potree
 const (
 	MaxPointsPerChunk = 10000
 	ENCODING_BROTLI   = "BROTLI"
+	HierarchyStepSize = 4
+	MetadataName      = "metadata.json"
+	HierarchyName     = "hierarchy.bin"
+	OctreeName        = "octree.bin"
 )
 
 type PotreeBin struct {

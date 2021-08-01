@@ -1,22 +1,40 @@
 package potree
 
+import "io"
+
 type NodeType uint8
 
 const (
-	NORMAL NodeType = 0
-	LEAF   NodeType = 1
-	PROXY  NodeType = 2
+	NT_NORMAL NodeType = 0
+	NT_LEAF   NodeType = 1
+	NT_PROXY  NodeType = 2
 )
 
-type Node struct {
-	ByteOffset uint64
-	ByteSize   uint64
-	NumPoints  uint32
+type node struct {
 	Type       NodeType
 	ChildMask  uint8
-	Name       string
-	Parent     *Node
-	Childs     [8]*Node
+	NumPoints  uint32
+	ByteOffset int64
+	ByteSize   int64
+}
+
+func (n *node) CalcSize() int64 {
+	return 0
+}
+
+func (n *node) Read(reader io.ReadSeeker) error {
+	return nil
+}
+
+func (n *node) Write(writer io.Writer) error {
+	return nil
+}
+
+type Node struct {
+	node
+	Name   string
+	Parent *Node
+	Childs [8]*Node
 }
 
 func (n *Node) Level() int {
@@ -24,7 +42,7 @@ func (n *Node) Level() int {
 }
 
 func (n *Node) IsLeaf() bool {
-	return n.Type == LEAF
+	return n.Type == NT_LEAF
 }
 
 func (n *Node) Traverse(callback func(*Node) bool) bool {

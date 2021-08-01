@@ -15,6 +15,7 @@ type Metadata struct {
 	Attrs           []Attribute `json:"attributes"`
 	BytesPerPoint   int         `json:"bytesPerPoint"`
 	Scale           [3]float64  `json:"scale"`
+	Spacing         *float64    `json:"spacing,omitempty"`
 	Offset          *[3]float64 `json:"offset,omitempty"`
 	Hierarchy       *Hierarchy  `json:"hierarchy,omitempty"`
 	Encoding        *string     `json:"encoding,omitempty"`
