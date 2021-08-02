@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
+	"strconv"
 )
 
 type NodeType uint8
@@ -136,4 +137,37 @@ func ChildMaskOf(node *Node) uint8 {
 	}
 
 	return mask
+}
+
+func CaclNodeID(level, gridSize int, x, y, z int64) string {
+	id := "r"
+
+	currentGridSize := gridSize
+	lx := x
+	ly := y
+	lz := z
+
+	for i := 0; i < level; i++ {
+		index := 0
+
+		if lx >= int64(currentGridSize/2) {
+			index = index + 0b100
+			lx = lx - int64(currentGridSize/2)
+		}
+
+		if ly >= int64(currentGridSize/2) {
+			index = index + 0b010
+			ly = ly - int64(currentGridSize/2)
+		}
+
+		if lz >= int64(currentGridSize/2) {
+			index = index + 0b001
+			lz = lz - int64(currentGridSize/2)
+		}
+
+		id = id + strconv.Itoa(index)
+		currentGridSize = currentGridSize / 2
+	}
+
+	return id
 }
