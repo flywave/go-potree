@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 )
 
 const (
@@ -37,9 +38,8 @@ func NewMetadata(attributes []Attribute) *Metadata {
 	return ret
 }
 
-func (l *Metadata) readMetadata(data io.ReadSeeker, jsonLength int) error {
-	jdata := make([]byte, jsonLength)
-	_, err := data.Read(jdata)
+func (l *Metadata) readMetadata(data io.ReadSeeker) error {
+	jdata, err := ioutil.ReadAll(data)
 	dec := json.NewDecoder(bytes.NewBuffer(jdata))
 	if err != nil {
 		return nil

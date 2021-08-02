@@ -1,6 +1,10 @@
 package potree
 
-import "io"
+import (
+	"bytes"
+	"encoding/binary"
+	"io"
+)
 
 type NodeType uint8
 
@@ -8,6 +12,10 @@ const (
 	NT_NORMAL NodeType = 0
 	NT_LEAF   NodeType = 1
 	NT_PROXY  NodeType = 2
+)
+
+var (
+	POTREE_BYTEORDER = binary.LittleEndian
 )
 
 type node struct {
@@ -18,23 +26,78 @@ type node struct {
 	ByteSize   int64
 }
 
-func (n *node) CalcSize() int64 {
-	return 0
+func (n *node) readNode(reader io.Reader) error {
+	return binary.Read(reader, POTREE_BYTEORDER, n)
 }
 
-func (n *node) Read(reader io.ReadSeeker) error {
+func (n *node) writeNode(writer io.Writer) error {
+	return binary.Write(writer, POTREE_BYTEORDER, *n)
+}
+
+func (n *node) size() int64 {
+	return n.ByteSize
+}
+
+func (n *node) read(reader io.ReadSeeker) ([]byte, error) {
+	_, err := reader.Seek(n.ByteOffset, io.SeekStart)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]byte, n.ByteSize)
+	_, err = reader.Read(ret)
+	return ret, err
+}
+
+func (n *node) write(off int64, buf []byte, writer io.Writer) error {
+	n.ByteOffset = off
+	si, err := writer.Write(buf)
+	if err != nil {
+		return err
+	}
+	n.ByteSize = int64(si)
 	return nil
 }
 
-func (n *node) Write(writer io.Writer) error {
-	return nil
+func (n *node) compact(attributes []Attribute, isBrotliEncoded bool) []byte {
+	buf := &bytes.Buffer{}
+	for i := range attributes {
+		attributes[i].pack(isBrotliEncoded)
+		buf.Write(attributes[i].Buffer)
+	}
+	return buf.Bytes()
+}
+
+func (n *node) uncompact(data []byte, attributes []Attribute, isBrotliEncoded bool) {
+	offset := 0
+	for i := range attributes {
+		size := int(n.NumPoints) * attributes[i].Size
+		attributes[i].Buffer = data[offset : offset+size]
+		attributes[i].unpack(isBrotliEncoded)
+		offset += size
+	}
+}
+
+func (n *node) compress(attributes []Attribute) []byte {
+	uncomress := n.compact(attributes, true)
+	ctx := &Brotli{}
+	ret := ctx.Encode(nil, uncomress)
+	return ret
+}
+
+func (n *node) uncompress(data []byte, attributes []Attribute) {
+	ctx := &Brotli{}
+	uncomress := ctx.Decode(nil, data)
+	n.uncompact(uncomress, attributes, true)
 }
 
 type Node struct {
 	node
-	Name   string
-	Parent *Node
-	Childs [8]*Node
+	Box      AABB
+	Name     string
+	Parent   *Node
+	Childs   [8]*Node
+	Buffer   []byte
+	genProxy bool
 }
 
 func (n *Node) Level() int {
