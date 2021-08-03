@@ -221,7 +221,6 @@ func (b *PotreeBin) gatherChunk(start *Node, levels int) hierarchyChunk {
 
 		childLevel := len(start.Name)
 		if childLevel <= startLevel+levels {
-
 			for _, child := range node.Childs {
 				if child == nil {
 					continue
@@ -272,7 +271,7 @@ func (b *PotreeBin) writeHierarchyChunk(c *hierarchyChunk, offset int64, buffer 
 			targetChunkIndex := chunkPointers[n.Name]
 			targetChunk := chunks[targetChunkIndex]
 
-			proxy := n
+			proxy := *n
 			proxy.Type = NT_PROXY
 			proxy.ByteOffset = chunkByteOffsets[targetChunkIndex]
 			proxy.ByteSize = targetChunk.chunkSize()

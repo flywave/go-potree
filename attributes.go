@@ -188,6 +188,7 @@ func (a *Attribute) unpack(isBrotliEncoded bool) {
 			newPos[i*3+1] = int32(Y)
 			newPos[i*3+2] = int32(Z)
 		}
+
 		a.Name = "position"
 		a.Type = "int32"
 		a.NumElements = 3
@@ -220,6 +221,7 @@ func (a *Attribute) unpack(isBrotliEncoded bool) {
 			newColor[i*3+1] = uint16(g)
 			newColor[i*3+2] = uint16(b)
 		}
+
 		a.Name = "rgb"
 		a.Type = "uint16"
 		a.NumElements = 3
