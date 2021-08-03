@@ -421,6 +421,7 @@ var (
 	COLOR_MORTON               = Attribute{Name: "rgb_morton", Type: "uint64", NumElements: 1, ElementSize: 8, Size: 8}
 	INTENSITY                  = Attribute{Name: "intensity", Type: "uint16", NumElements: 1, ElementSize: 2, Size: 2}
 	CLASSIFICATION             = Attribute{Name: "classification", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
+	RETURNS                    = Attribute{Name: "returns", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
 	RETURN_NUMBER              = Attribute{Name: "return number", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
 	NUMBER_OF_RETURNS          = Attribute{Name: "number of returns", Type: "uint8", NumElements: 1, ElementSize: 1, Size: 1}
 	POINT_SOURCE_ID            = Attribute{Name: "point source id", Type: "uint16", NumElements: 1, ElementSize: 2, Size: 2}

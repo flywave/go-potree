@@ -1,6 +1,11 @@
 package potree
 
-import "os"
+import (
+	"math"
+	"os"
+
+	vec3d "github.com/flywave/go3d/float64/vec3"
+)
 
 func splitBy3(a uint32) uint64 {
 	x := uint64(a & 0x1fffff)           // we only look at the first 21 bits
@@ -70,4 +75,29 @@ func FileExists(filename string) bool {
 		return false
 	}
 	return true
+}
+
+type ScaleOffset struct {
+	scale  [3]float64
+	offset [3]float64
+}
+
+func ComputeScaleOffset(min, max, targetScale vec3d.T) ScaleOffset {
+	offset := min
+	scale := targetScale
+	size := vec3d.Sub(&max, &min)
+
+	min_scale_x := size[0] / math.Pow(2.0, 30.0)
+	min_scale_y := size[1] / math.Pow(2.0, 30.0)
+	min_scale_z := size[2] / math.Pow(2.0, 30.0)
+
+	scale[0] = math.Max(scale[0], min_scale_x)
+	scale[1] = math.Max(scale[1], min_scale_y)
+	scale[2] = math.Max(scale[2], min_scale_z)
+
+	var scaleOffset ScaleOffset
+	scaleOffset.scale = scale
+	scaleOffset.offset = offset
+
+	return scaleOffset
 }

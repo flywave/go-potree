@@ -45,7 +45,7 @@ func (c *hierarchyChunk) sortNodes() {
 	sort.Sort(c.nodes)
 }
 
-type PotreeBin struct {
+type PotreeArchive struct {
 	path         string
 	root         *Node
 	nodes        []*Node
@@ -55,11 +55,11 @@ type PotreeBin struct {
 	octreeOffset int64
 }
 
-func NewPotreeBin(path string) *PotreeBin {
-	return &PotreeBin{path: path}
+func NewArchive(path string) *PotreeArchive {
+	return &PotreeArchive{path: path}
 }
 
-func (b *PotreeBin) Load() error {
+func (b *PotreeArchive) Load() error {
 	err := b.readMetadata()
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (b *PotreeBin) Load() error {
 	return nil
 }
 
-func (b *PotreeBin) Save() error {
+func (b *PotreeArchive) Save() error {
 	b.octreeOffset = 0
 	err := b.writeOctree(b.root)
 	if err != nil {
@@ -94,19 +94,19 @@ func (b *PotreeBin) Save() error {
 	return nil
 }
 
-func (b *PotreeBin) getMetadataPath() string {
+func (b *PotreeArchive) getMetadataPath() string {
 	return path.Join(b.path, MetadataName)
 }
 
-func (b *PotreeBin) getHierarchyPath() string {
+func (b *PotreeArchive) getHierarchyPath() string {
 	return path.Join(b.path, HierarchyName)
 }
 
-func (b *PotreeBin) getOctreePath() string {
+func (b *PotreeArchive) getOctreePath() string {
 	return path.Join(b.path, OctreeName)
 }
 
-func (b *PotreeBin) readMetadata() error {
+func (b *PotreeArchive) readMetadata() error {
 	p := b.getMetadataPath()
 	if !FileExists(p) {
 		return errors.New("metadata.json not found!")
@@ -119,7 +119,7 @@ func (b *PotreeBin) readMetadata() error {
 	return b.metadata.readMetadata(f)
 }
 
-func (b *PotreeBin) writeMetadata() (int, error) {
+func (b *PotreeArchive) writeMetadata() (int, error) {
 	p := b.getMetadataPath()
 	f, err := os.Open(p)
 	if err != nil {
@@ -128,7 +128,7 @@ func (b *PotreeBin) writeMetadata() (int, error) {
 	return b.metadata.writeMetadata(f)
 }
 
-func (b *PotreeBin) checkHierarchy() error {
+func (b *PotreeArchive) checkHierarchy() error {
 	if b.metadata == nil {
 		err := b.readMetadata()
 		if err != nil {
@@ -147,7 +147,7 @@ func nodeExists(nodes []*Node, node *Node) bool {
 	return false
 }
 
-func (b *PotreeBin) parseNode(n *Node, buffer io.ReadSeeker, chunkSize int64, nodes []*Node) {
+func (b *PotreeArchive) parseNode(n *Node, buffer io.ReadSeeker, chunkSize int64, nodes []*Node) {
 	nodes[0] = n
 
 	for i, current := range nodes {
@@ -204,7 +204,7 @@ func (b *PotreeBin) parseNode(n *Node, buffer io.ReadSeeker, chunkSize int64, no
 	}
 }
 
-func (b *PotreeBin) gatherChunk(start *Node, levels int) hierarchyChunk {
+func (b *PotreeArchive) gatherChunk(start *Node, levels int) hierarchyChunk {
 	startLevel := len(start.Name) - 1
 
 	chunk := hierarchyChunk{}
@@ -234,7 +234,7 @@ func (b *PotreeBin) gatherChunk(start *Node, levels int) hierarchyChunk {
 	return chunk
 }
 
-func (b *PotreeBin) createHierarchyChunks(hierarchyStepSize int) []hierarchyChunk {
+func (b *PotreeArchive) createHierarchyChunks(hierarchyStepSize int) []hierarchyChunk {
 	hierarchyChunks := []hierarchyChunk{}
 	stack := NewStack()
 	stack.Push(b.root)
@@ -260,7 +260,7 @@ func (b *PotreeBin) createHierarchyChunks(hierarchyStepSize int) []hierarchyChun
 	return hierarchyChunks
 }
 
-func (b *PotreeBin) writeHierarchyChunk(c *hierarchyChunk, offset int64, buffer io.Writer, hierarchyStepSize int, chunks []hierarchyChunk, chunkByteOffsets []int64, chunkPointers map[string]int) error {
+func (b *PotreeArchive) writeHierarchyChunk(c *hierarchyChunk, offset int64, buffer io.Writer, hierarchyStepSize int, chunks []hierarchyChunk, chunkByteOffsets []int64, chunkPointers map[string]int) error {
 	chunkLevel := len(c.name) - 1
 	for _, n := range c.nodes {
 		isProxy := n.Level() == chunkLevel+hierarchyStepSize
@@ -292,7 +292,7 @@ func (b *PotreeBin) writeHierarchyChunk(c *hierarchyChunk, offset int64, buffer 
 	return nil
 }
 
-func (b *PotreeBin) writeNode(n *Node, buffer io.Writer) error {
+func (b *PotreeArchive) writeNode(n *Node, buffer io.Writer) error {
 	if n == nil {
 		return errors.New("node is nil")
 	}
@@ -304,7 +304,7 @@ func (b *PotreeBin) writeNode(n *Node, buffer io.Writer) error {
 	return nil
 }
 
-func (b *PotreeBin) writeHierarchy() error {
+func (b *PotreeArchive) writeHierarchy() error {
 	hierarchy_file := b.getHierarchyPath()
 	f, err := os.Open(hierarchy_file)
 	if err != nil {
@@ -350,7 +350,7 @@ func (b *PotreeBin) writeHierarchy() error {
 	return nil
 }
 
-func (b *PotreeBin) readHierarchy() error {
+func (b *PotreeArchive) readHierarchy() error {
 	if b.metadata == nil {
 		err := b.readMetadata()
 		if err != nil {
@@ -381,7 +381,7 @@ func (b *PotreeBin) readHierarchy() error {
 	return nil
 }
 
-func (b *PotreeBin) openOctree() error {
+func (b *PotreeArchive) openOctree() error {
 	p := b.getOctreePath()
 	if !FileExists(p) {
 		return errors.New("octree.bin not found!")
@@ -394,14 +394,14 @@ func (b *PotreeBin) openOctree() error {
 	return nil
 }
 
-func (b *PotreeBin) closeOctree() error {
+func (b *PotreeArchive) closeOctree() error {
 	if b.octree != nil {
 		return b.octree.Close()
 	}
 	return nil
 }
 
-func (b *PotreeBin) writeOctree(node *Node) error {
+func (b *PotreeArchive) writeOctree(node *Node) error {
 	err := b.writeOctreeNode(node)
 	if err != nil {
 		return err
@@ -417,7 +417,7 @@ func (b *PotreeBin) writeOctree(node *Node) error {
 	return nil
 }
 
-func (b *PotreeBin) writeOctreeNode(node *Node) error {
+func (b *PotreeArchive) writeOctreeNode(node *Node) error {
 	if b.octree == nil {
 		err := b.openOctree()
 		if err != nil {
@@ -438,7 +438,7 @@ func (b *PotreeBin) writeOctreeNode(node *Node) error {
 	return node.write(b.octreeOffset, node.Buffer, b.octree)
 }
 
-func (b *PotreeBin) readOctreeNode(node *Node) error {
+func (b *PotreeArchive) readOctreeNode(node *Node) error {
 	if b.metadata == nil {
 		err := b.readMetadata()
 		if err != nil {
@@ -461,7 +461,7 @@ func (b *PotreeBin) readOctreeNode(node *Node) error {
 	return nil
 }
 
-func (b *PotreeBin) unpackNode(node *Node) error {
+func (b *PotreeArchive) unpackNode(node *Node) error {
 	if node.Buffer == nil {
 		err := b.readOctreeNode(node)
 		if err != nil {
