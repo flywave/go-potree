@@ -48,7 +48,6 @@ func (c *hierarchyChunk) sortNodes() {
 type PotreeArchive struct {
 	path         string
 	root         *Node
-	nodes        []*Node
 	nodeMaps     map[string]*Node
 	metadata     *Metadata
 	octree       *os.File
