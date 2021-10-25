@@ -425,9 +425,9 @@ func (b *PotreeArchive) writeOctreeNode(node *Node) error {
 	}
 	if node.Buffer == nil {
 		if b.metadata.IsBrotliEncoded() {
-			node.Buffer = node.compress(b.metadata.Attrs)
+			node.Buffer = node.compress(b.metadata.Attrs[node.AttrStart:node.AttrEnd])
 		} else {
-			node.Buffer = node.compact(b.metadata.Attrs, false)
+			node.Buffer = node.compact(b.metadata.Attrs[node.AttrStart:node.AttrEnd], false)
 		}
 	}
 	node.ByteOffset = b.octreeOffset

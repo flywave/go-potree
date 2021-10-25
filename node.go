@@ -93,12 +93,14 @@ func (n *node) uncompress(data []byte, attributes []Attribute) {
 
 type Node struct {
 	node
-	Box      AABB
-	Name     string
-	Parent   *Node
-	Childs   [8]*Node
-	Buffer   []byte
-	genProxy bool
+	Box       AABB
+	Name      string
+	Parent    *Node
+	Childs    [8]*Node
+	Buffer    []byte
+	genProxy  bool
+	AttrStart int
+	AttrEnd   int
 }
 
 func (n *Node) Level() int {
