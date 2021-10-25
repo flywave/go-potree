@@ -52,10 +52,19 @@ type PotreeArchive struct {
 	metadata     *Metadata
 	octree       *os.File
 	octreeOffset int64
+	attrOffset   int
 }
 
 func NewArchive(path string) *PotreeArchive {
 	return &PotreeArchive{path: path}
+}
+
+func (b *PotreeArchive) SetMetadata(metadata *Metadata) {
+	b.metadata = metadata
+}
+
+func (b *PotreeArchive) SetRoot(root *Node) {
+	b.root = root
 }
 
 func (b *PotreeArchive) Load() error {
@@ -108,7 +117,7 @@ func (b *PotreeArchive) getOctreePath() string {
 func (b *PotreeArchive) readMetadata() error {
 	p := b.getMetadataPath()
 	if !FileExists(p) {
-		return errors.New("metadata.json not found!")
+		return errors.New("metadata.json not found")
 	}
 	f, err := os.Open(p)
 	if err != nil {
@@ -360,7 +369,7 @@ func (b *PotreeArchive) readHierarchy() error {
 		first_chunk_size := b.metadata.Hierarchy.FirstChunkSize
 		hierarchy_file := b.getHierarchyPath()
 		if !FileExists(hierarchy_file) {
-			return errors.New("hierarchy.bin not found!")
+			return errors.New("hierarchy.bin not found")
 		}
 		f, err := os.Open(hierarchy_file)
 		if err != nil {
@@ -467,10 +476,12 @@ func (b *PotreeArchive) unpackNode(node *Node) error {
 			return err
 		}
 	}
+	node.AttrStart = b.attrOffset
 	if b.metadata.IsBrotliEncoded() {
-		node.uncompress(node.Buffer, b.metadata.Attrs)
+		node.uncompress(node.Buffer, b.metadata.Attrs[node.AttrStart:node.AttrEnd])
 	} else {
-		node.uncompact(node.Buffer, b.metadata.Attrs, false)
+		node.uncompact(node.Buffer, b.metadata.Attrs[node.AttrStart:node.AttrEnd], false)
 	}
+	b.attrOffset = node.AttrEnd
 	return nil
 }

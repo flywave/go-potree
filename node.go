@@ -25,6 +25,8 @@ type node struct {
 	NumPoints  uint32
 	ByteOffset int64
 	ByteSize   int64
+	AttrStart  int
+	AttrEnd    int
 }
 
 func (n *node) readNode(reader io.Reader) error {
@@ -70,11 +72,17 @@ func (n *node) compact(attributes []Attribute, isBrotliEncoded bool) []byte {
 
 func (n *node) uncompact(data []byte, attributes []Attribute, isBrotliEncoded bool) {
 	offset := 0
-	for i := range attributes {
-		size := int(n.NumPoints) * attributes[i].Size
-		attributes[i].Buffer = data[offset : offset+size]
-		attributes[i].unpack(isBrotliEncoded)
+	attrOff := n.AttrStart
+	for {
+		size := int(n.NumPoints) * attributes[attrOff].Size
+		attributes[attrOff].Buffer = data[offset : offset+size]
+		attributes[attrOff].unpack(isBrotliEncoded)
 		offset += size
+		attrOff++
+		if offset == len(data) {
+			n.AttrEnd = attrOff
+			return
+		}
 	}
 }
 
@@ -93,14 +101,12 @@ func (n *node) uncompress(data []byte, attributes []Attribute) {
 
 type Node struct {
 	node
-	Box       AABB
-	Name      string
-	Parent    *Node
-	Childs    [8]*Node
-	Buffer    []byte
-	genProxy  bool
-	AttrStart int
-	AttrEnd   int
+	Box      AABB
+	Name     string
+	Parent   *Node
+	Childs   [8]*Node
+	Buffer   []byte
+	genProxy bool
 }
 
 func (n *Node) Level() int {
