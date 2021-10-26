@@ -56,7 +56,7 @@ type PotreeArchive struct {
 }
 
 func NewArchive(path string) *PotreeArchive {
-	return &PotreeArchive{path: path}
+	return &PotreeArchive{path: path, metadata: &Metadata{}}
 }
 
 func (b *PotreeArchive) SetMetadata(metadata *Metadata) {

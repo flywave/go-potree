@@ -31,10 +31,6 @@ type Metadata struct {
 func NewMetadata(attributes []Attribute) *Metadata {
 	ret := &Metadata{Version: POTREE_VERSION}
 	ret.Attrs = attributes
-
-	for _, attribute := range attributes {
-		ret.BytesPerPoint += attribute.Size
-	}
 	return ret
 }
 
@@ -67,7 +63,6 @@ func (l *Metadata) writeMetadata(wr io.Writer) (int, error) {
 
 func (l *Metadata) Add(attribute *Attribute) {
 	l.Attrs = append(l.Attrs, *attribute)
-	l.BytesPerPoint += attribute.Size
 }
 
 func (l *Metadata) GetOffset(name string) int {
